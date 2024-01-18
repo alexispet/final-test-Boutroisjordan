@@ -42,6 +42,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Display .env content
+        run: cat .env
+
       - name: Create .env file
         run: echo "DB_HOST=${DB_HOST}\nDB_USER=${DB_USER}\nDB_PASSWORD=${DB_PASSWORD}\nDB_DATABASE=${DB_DATABASE}" > .env
 
