@@ -11,7 +11,12 @@ const pool = mariadb.createPool({
 
 async function initDB() {
     let conn;
-    console.log("test log: ", pool);
+    console.log("test log: ", {
+      host: process.env.DB_HOST || "localhost",
+      user: process.env.DB_USER || "votre_utilisateuroooo",
+      password: process.env.DB_PASSWORD || "votre_mot_de_passe",
+      database: process.env.DB_DATABASE || "votre_base_de_donnees",
+    });
     try {
         conn = await pool.getConnection();
 
