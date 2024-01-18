@@ -1,17 +1,11 @@
 name: CICD
+
 on:
   push:
     branches:
       - main
       - develop  # Ajoutez la branche sur laquelle vous souhaitez déclencher le workflow
 
-- name: Debug secrets
-  run: |
-    echo "DB_HOST: ${{ secrets.DB_HOST }}"
-    echo "DB_USER: ${{ secrets.DB_USER }}"
-    echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
-    echo "DB_DATABASE: ${{ secrets.DB_DATABASE }}"
-    
 env:
   REGISTRY: ghrc.io
   IMAGE_NAME: boutroisjordan/final-test-boutroisjordan-node
@@ -21,6 +15,16 @@ env:
   DB_DATABASE: ${{ secrets.DB_DATABASE }}
 
 jobs:
+
+  debugSecrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debug secrets
+        run: |
+          echo "DB_HOST: ${{ secrets.DB_HOST }}"
+          echo "DB_USER: ${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
+          echo "DB_DATABASE: ${{ secrets.DB_DATABASE }}"
 
   buildDocker:
     runs-on: ubuntu-latest
@@ -40,10 +44,10 @@ jobs:
         run: echo "TAG=$(if [[ ${{ github.ref }} == 'refs/heads/develop' ]]; then echo 'develop'; else echo 'latest'; fi)" >> $GITHUB_ENV
 
       - name: Build Docker image
-        run: docker build --tag ghcr.io/${{env.IMAGE_NAME}}:${{ env.TAG }} --platform linux/amd64 .
+        run: docker build --tag ghcr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }} --platform linux/amd64 .
 
       - name: Push Docker image to GHCR
-        run: docker push ghcr.io/${{env.IMAGE_NAME}}:${{ env.TAG }}
+        run: docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
   testDocker:
     needs: buildDocker
@@ -55,7 +59,7 @@ jobs:
         run: cat .env
 
       - name: Create .env file
-        run: echo "DB_HOST=${DB_HOST}\nDB_USER=${DB_USER}\nDB_PASSWORD=${DB_PASSWORD}\nDB_DATABASE=${DB_DATABASE}" > .env
+        run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
 
       - name: Docker run
         run: docker compose --env-file .env up -d
