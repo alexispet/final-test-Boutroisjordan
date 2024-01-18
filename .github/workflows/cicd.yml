@@ -32,4 +32,11 @@ jobs:
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{env.IMAGE_NAME}}:${{ env.TAG }}
 
-        
+  testDocker:
+    needs: buildDocker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d --build
+      - run: sleep 30
+      - run: docker compose exec node npm run test
