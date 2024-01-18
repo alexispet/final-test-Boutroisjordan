@@ -49,24 +49,44 @@ jobs:
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
-  testDocker:
-    needs: buildDocker
+  # testDocker:
+  #   needs: buildDocker
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+
+  #     # - name: Display .env content
+  #     #   run: cat .env
+
+  #     # - name: Create .env file
+  #     #   run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
+
+  #     - name: Docker run
+  #       run: docker compose up -d
+  #       # run: docker compose --env-file .env up -d
+
+  #     - name: Sleep
+  #       run: sleep 30
+
+  #     - name: Test
+  #       run: docker compose exec node npm run test
+  tests:
+    environment: development
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      # - name: Display .env content
-      #   run: cat .env
-
-      # - name: Create .env file
-      #   run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
-
-      - name: Docker run
-        run: docker compose up -d
-        # run: docker compose --env-file .env up -d
-
-      - name: Sleep
-        run: sleep 30
-
-      - name: Test
-        run: docker compose exec node npm run test
+      - uses: adambirds/docker-compose-action@v1.3.0
+        with:
+            compose-file: "./docker-compose.yml"
+            down-flags: "--volumes"
+            services: |
+                node
+                mariadb
+            test-container: app
+            test-command: "npm run test"
+        env: 
+            MYSQL_RANDOM_ROOT_PASSWORD: ${{ secrets.MYSQL_RANDOM_ROOT_PASSWORD }}
+            DB_DATABASE: ${{ secrets.DB_DATABASE }}
+            DB_HOST: ${{ secrets.DB_HOST }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_USER: ${{ secrets.DB_USER }}
