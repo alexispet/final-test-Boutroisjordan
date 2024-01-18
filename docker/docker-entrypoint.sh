@@ -5,6 +5,6 @@ then
     echo "On est en Dev"
     npm install
 fi
- npm run db:import
+  npm run db:import
 
 exec "$@" 

@@ -2,11 +2,11 @@ import mariadb from "mariadb";
 
 // Configuration de la base de données
 const pool = mariadb.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'votre_utilisateur',
-    password: process.env.DB_PASSWORD || 'votre_mot_de_passe',
-    database: process.env.DB_DATABASE || 'votre_base_de_donnees',
-    connectionLimit: 5
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "votre_utilisateuroooo",
+  password: process.env.DB_PASSWORD || "votre_mot_de_passe",
+  database: process.env.DB_DATABASE || "votre_base_de_donnees",
+  connectionLimit: 5,
 });
 
 async function initDB() {
