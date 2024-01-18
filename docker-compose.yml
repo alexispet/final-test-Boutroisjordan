@@ -19,11 +19,11 @@ services:
   mariadb:
     image: mariadb:11.2.2
     environment:
-      MARIADB_HOST: mariadb 
-      MARIADB_USER: mariauser
-      MARIADB_PASSWORD: mariapassword
+      MARIADB_HOST: $DB_HOST}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_DATABASE: dbmaria
-      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_RANDOM_ROOT_PASSWORD: ${DB_DATABASE}
     volumes:
       - "./docker/mariadb/data:/var/lib/sql"
 
