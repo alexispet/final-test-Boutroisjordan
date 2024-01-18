@@ -4,6 +4,14 @@ on:
     branches:
       - main
       - develop  # Ajoutez la branche sur laquelle vous souhaitez déclencher le workflow
+
+- name: Debug secrets
+  run: |
+    echo "DB_HOST: ${{ secrets.DB_HOST }}"
+    echo "DB_USER: ${{ secrets.DB_USER }}"
+    echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
+    echo "DB_DATABASE: ${{ secrets.DB_DATABASE }}"
+    
 env:
   REGISTRY: ghrc.io
   IMAGE_NAME: boutroisjordan/final-test-boutroisjordan-node
@@ -11,6 +19,7 @@ env:
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
   DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
 jobs:
 
   buildDocker:
