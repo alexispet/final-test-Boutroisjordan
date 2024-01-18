@@ -55,11 +55,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+
+
       - name: Create .env file
         run: echo "DB_HOST=${{ secrets.DB_HOST }}\nDB_USER=${{ secrets.DB_USER }}\nDB_PASSWORD=${{ secrets.DB_PASSWORD }}\nDB_DATABASE=${{ secrets.DB_DATABASE }}" > .env
 
       - name: Launch Docker
         run: docker compose --env-file .env up -d
+
+      - name: Make GET request
+        run: |
+          RESPONSE=$(curl -s https://localhost:3000/)
+          echo "Response: $RESPONSE"
 
       - name: Audit URLs using Lighthouse
         uses: treosh/lighthouse-ci-action@v10
