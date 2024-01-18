@@ -10,9 +10,9 @@ FROM node:21.5.0-alpine AS node
 
 WORKDIR /app
 
-COPY --from=build /usr/app/package.json /usr/app/
-COPY --from=build /usr/app/node_modules /usr/app/node_modules/
-COPY --from=build /usr/app /usr/app
+COPY --from=build /app/package.json /app/
+COPY --from=build /app/node_modules /app/node_modules/
+COPY --from=build /app /app
 
 EXPOSE 3000
 
