@@ -8,6 +8,8 @@ RUN npm install
 
 FROM node:21.5.0-alpine AS node
 
+LABEL org.opencontainers.image.source https://github.com/OWNER/REPO
+
 WORKDIR /app
 
 COPY --from=build /app/package.json /app/
