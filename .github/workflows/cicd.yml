@@ -49,12 +49,17 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
+  dependency-audit:
+     runs-on: ubuntu-latest
+     steps:
+       - uses: actions/checkout@v4
+       - run: npm audit --audit-level=high
+
   lighthouse:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
 
 
       - name: Create .env file
@@ -65,7 +70,7 @@ jobs:
 
       - name: Make GET request
         run: |
-          RESPONSE=$(curl -s http://localhost:3000/)
+          RESPONSE=$(curl -vvv http://localhost:3000/)
           echo "Response: $RESPONSE"
 
       - name: Audit URLs using Lighthouse
