@@ -58,12 +58,12 @@ jobs:
       # - name: Display .env content
       #   run: cat .env
 
-      # - name: Create .env file
-      #   run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
+      - name: Create .env file
+        run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
 
       - name: Docker run
-        run: docker compose up -d
-        # run: docker compose --env-file .env up -d
+        # run: docker compose up -d
+        run: docker compose --env-file .env up -d
 
       - name: Sleep
         run: sleep 30

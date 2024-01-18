@@ -19,7 +19,7 @@ services:
   mariadb:
     image: mariadb:11.2.2
     environment:
-      MARIADB_HOST: $DB_HOST}
+      MARIADB_HOST: ${DB_HOST}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_DATABASE: ${DB_DATABASE}
