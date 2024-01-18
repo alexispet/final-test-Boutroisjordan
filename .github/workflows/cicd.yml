@@ -46,13 +46,13 @@ jobs:
         run: echo "DB_HOST=${DB_HOST}\nDB_USER=${DB_USER}\nDB_PASSWORD=${DB_PASSWORD}\nDB_DATABASE=${DB_DATABASE}" > .env
 
       - name: Docker run
-        run: docker compose --env-file .env up -d
+        run: docker compose --env-file .env up 
 
       - name: Logs
         run: docker-compose logs
 
       - name: Sleep
         run: sleep 30
-        
+
       - name: Test
         run: docker compose exec node npm run test
