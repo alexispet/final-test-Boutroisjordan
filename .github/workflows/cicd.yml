@@ -9,23 +9,71 @@ on:
 env:
   REGISTRY: ghrc.io
   IMAGE_NAME: boutroisjordan/final-test-boutroisjordan-node
-  # DB_HOST: ${{ secrets.DB_HOST }}
-  # DB_USER: ${{ secrets.DB_USER }}
-  # DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  # DB_DATABASE: ${{ secrets.DB_DATABASE }}
+
 
 jobs:
 
-  # debugSecrets:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Debug secrets
-  #       run: |
-  #         echo "DB_HOST: ${{ secrets.DB_HOST }}"
-  #         echo "DB_USER: ${{ secrets.DB_USER }}"
-  #         echo "DB_PASSWORD: ${{ secrets.DB_PASSWORD }}"
-  #         echo "DB_DATABASE: ${{ secrets.DB_DATABASE }}"
+  tests:
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: adambirds/docker-compose-action@v1.3.0
+        with:
+            compose-file: "./docker-compose.yml"
+            down-flags: "--volumes"
+            services: |
+                node
+                mariadb
+            test-container: node
+            test-command: "npm run test"
+        env: 
+            MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+            DB_DATABASE: ${{ secrets.DB_DATABASE }}
+            DB_HOST: ${{ secrets.DB_HOST }}
+            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            DB_USER: ${{ secrets.DB_USER }}
 
+  codeql-analysis:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+    
+lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create .env file
+        run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
+
+      - name: Launch Docker
+        run: docker compose --env-file .env up -d
+
+
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            http://localhost.com/
+            http://localhost.com/post
+          budgetPath: ./budget.json # test performance budgets
+          uploadArtifacts: true # save results as an action artifacts
+          temporaryPublicStorage: true # upload lighthouse report to the temporary storage
+        
+        - run: docker compose down
+
+        
   buildDocker:
     runs-on: ubuntu-latest
     steps:
@@ -49,44 +97,3 @@ jobs:
       - name: Push Docker image to GHCR
         run: docker push ghcr.io/${{ env.IMAGE_NAME }}:${{ env.TAG }}
 
-  # testDocker:
-  #   needs: buildDocker
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-
-  #     # - name: Display .env content
-  #     #   run: cat .env
-
-  #     # - name: Create .env file
-  #     #   run: echo "DB_HOST=${{ env.DB_HOST }}\nDB_USER=${{ env.DB_USER }}\nDB_PASSWORD=${{ env.DB_PASSWORD }}\nDB_DATABASE=${{ env.DB_DATABASE }}" > .env
-
-  #     - name: Docker run
-  #       run: docker compose up -d
-  #       # run: docker compose --env-file .env up -d
-
-  #     - name: Sleep
-  #       run: sleep 30
-
-  #     - name: Test
-  #       run: docker compose exec node npm run test
-  tests:
-    environment: development
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: adambirds/docker-compose-action@v1.3.0
-        with:
-            compose-file: "./docker-compose.yml"
-            down-flags: "--volumes"
-            services: |
-                node
-                mariadb
-            test-container: node
-            test-command: "npm run test"
-        env: 
-            MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-            DB_DATABASE: ${{ secrets.DB_DATABASE }}
-            DB_HOST: ${{ secrets.DB_HOST }}
-            DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-            DB_USER: ${{ secrets.DB_USER }}

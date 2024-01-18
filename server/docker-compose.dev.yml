@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  node:
+    image: ghcr.io/boutroisjordan/final-test-boutroisjordan-node:develop
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - mariadb
+    env_file:
+      - ./.env
+    command: ["npm", "run", "start"]
+
+  mariadb:
+    image: mariadb:11.2.2
+    environment:
+      MARIADB_HOST: ${DB_HOST}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+    volumes:
+      - "./docker/mariadb/data:/var/lib/mysql"
