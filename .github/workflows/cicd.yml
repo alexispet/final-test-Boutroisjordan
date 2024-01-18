@@ -75,7 +75,7 @@ jobs:
         run: docker compose down
 
   buildDocker:
-  needs: [tests, codeql-analysis, lighthouse]
+    needs: [tests, codeql-analysis, lighthouse]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
