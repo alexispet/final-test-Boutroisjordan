@@ -82,7 +82,7 @@ jobs:
             services: |
                 node
                 mariadb
-            test-container: app
+            test-container: node
             test-command: "npm run test"
         env: 
             MYSQL_RANDOM_ROOT_PASSWORD: "yes"
