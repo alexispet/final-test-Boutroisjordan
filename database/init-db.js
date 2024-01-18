@@ -10,11 +10,10 @@ const pool = mariadb.createPool({
 });
 
 async function initDB() {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-
-        await conn.query(`
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    await conn.query(`
           CREATE TABLE IF NOT EXISTS posts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
@@ -23,23 +22,26 @@ async function initDB() {
           )
         `);
 
-        console.log('Structure de la base de données créée avec succès.');
-        await conn.query(`
+    console.log("Structure de la base de données créée avec succès.");
+    await conn.query(`
           INSERT INTO posts (title, content) VALUES
           ('Premier post', 'Contenu du premier post'),
           ('Deuxième post', 'Contenu du deuxième post'),
           ('Troisième post', 'Contenu du troisième post')
         `);
 
-        console.log('Données insérées avec succès.');
-    } catch (err) {
-        console.error('Erreur lors de l\'initialisation de la base de données:', err);
-    } finally {
-        if (conn) {
-            await conn.end();
-        }
-        process.exit();
+    console.log("Données insérées avec succès.");
+  } catch (err) {
+    console.error(
+      "Erreur lors de l'initialisation de la base de données:",
+      err
+    );
+  } finally {
+    if (conn) {
+      await conn.end();
     }
+    process.exit();
+  }
 }
 
 initDB();
