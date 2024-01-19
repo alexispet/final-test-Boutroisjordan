@@ -1,5 +1,6 @@
 import express from 'express';
 import mariadb from 'mariadb';
+import path from "path";
 
 const app = express();
 let port = process.env.PORT || 3000;
@@ -13,24 +14,28 @@ const pool = mariadb.createPool({
   connectionLimit: 5,
 });
 
-app.get('/', async (req, res) => {
+app.get("/", async (req, res) => {
   res
     .status(200)
     .json({ message: "Bienvenue à toi sur l'API de votre application" });
 });
 
-app.get('/post', async (req, res) => {
+app.get("/post", async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query('SELECT * FROM posts');
+    const rows = await conn.query("SELECT * FROM posts");
     res.json(rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Erreur lors de la récupération des posts' });
+    res.status(500).json({ error: "Erreur lors de la récupération des posts" });
   } finally {
     if (conn) return conn.end();
   }
+});
+
+app.get("/page", async (req, res) => {
+  res.sendFile(path.join(__dirname, "/views/index.html"));
 });
 
 function findAvailablePort() {

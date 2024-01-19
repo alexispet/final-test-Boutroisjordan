@@ -1,0 +1,22 @@
+name: CICD
+
+on:
+#schedule
+  push:
+    branches:
+      - main
+
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://boutroisjordan.alpex.ovh/page
+          uploadArtifacts: true
+          temporaryPublicStorage: true
