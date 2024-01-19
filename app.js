@@ -20,6 +20,7 @@ app.get("/", async (req, res) => {
     .json({ message: "Bienvenue à toi sur l'API de votre application" });
 });
 
+
 app.get("/post", async (req, res) => {
   let conn;
   try {
