@@ -11,32 +11,7 @@ env:
   IMAGE_NAME: boutroisjordan/final-test-boutroisjordan-node
 
 jobs:
-
-  # tests:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-
-  #     - name: Run Tests with Docker Compose
-  #       uses: adambirds/docker-compose-action@v1.3.0
-  #       with:
-  #         compose-file: "./docker-compose.yml"
-  #         down-flags: "--volumes"
-  #         services: |
-  #           node
-  #           mariadb
-  #         test-container: node
-  #         test-command: "npm run test"
-  #       env:
-  #         MARIADB_RANDOM_ROOT_PASSWORD: "yes"
-  #         DB_DATABASE: ${{ secrets.DB_DATABASE }}
-  #         DB_HOST: ${{ secrets.DB_HOST }}
-  #         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  #         DB_USER: ${{ secrets.DB_USER }}
-
   test:
-    #    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,11 +40,12 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  # dependency-audit:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v4
-  #      - run: npm audit --audit-level=high
+  dependency-audit:
+     runs-on: ubuntu-latest
+     needs: [test]
+     steps:
+       - uses: actions/checkout@v4
+       - run: npm audit --audit-level=high
 
 
   buildDocker:
