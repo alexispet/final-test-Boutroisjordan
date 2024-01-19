@@ -49,7 +49,7 @@ jobs:
 
 
   buildDocker:
-    needs: [test, codeql-analysis]
+    needs: [test, codeql-analysis, dependency-audit]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -34,10 +34,23 @@ app.get("/post", async (req, res) => {
   }
 });
 
-app.get("/page", async (req, res) => {
-  res.sendFile(path.join(__dirname, "/views/index.html"));
-});
+app.get("/page", (req, res) => {
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Page HTML</title>
+    </head>
+    <body>
+      <h1>Bienvenue sur la page HTML!</h1>
+    </body>
+    </html>
+  `;
 
+  res.send(htmlContent);
+});
 function findAvailablePort() {
   return new Promise((resolve, reject) => {
     const server = app.listen(port, () => {

@@ -12,6 +12,7 @@ services:
     ports:
       - "3000:3000"
     command: ["npm", "run", "start"]
+    restart: "always"
     depends_on:
       - mariadb
     volumes:

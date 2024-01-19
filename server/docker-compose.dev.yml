@@ -4,6 +4,7 @@ services:
     image: ghcr.io/boutroisjordan/final-test-boutroisjordan-node:develop
     environment:
       NODE_ENV: development
+    restart: "always"
     networks:
       - frontend
       - backend
