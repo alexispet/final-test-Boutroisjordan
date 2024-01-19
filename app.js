@@ -34,9 +34,9 @@ app.get("/post", async (req, res) => {
   }
 });
 
-// app.get("/page", async (req, res) => {
-//   res.sendFile(path.join(__dirname, "/views/index.html"));
-// });
+app.get("/page", async (req, res) => {
+  res.sendFile(path.join(__dirname, "/views/index.html"));
+});
 
 function findAvailablePort() {
   return new Promise((resolve, reject) => {
