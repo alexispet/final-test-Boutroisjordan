@@ -28,8 +28,3 @@ services:
       MARIADB_RANDOM_ROOT_PASSWORD: "yes"
     volumes:
       - "./docker/mariadb/data:/var/lib/sql"
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
