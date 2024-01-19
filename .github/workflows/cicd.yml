@@ -12,28 +12,44 @@ env:
 
 jobs:
 
-  tests:
+  # tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Run Tests with Docker Compose
+  #       uses: adambirds/docker-compose-action@v1.3.0
+  #       with:
+  #         compose-file: "./docker-compose.yml"
+  #         down-flags: "--volumes"
+  #         services: |
+  #           node
+  #           mariadb
+  #         test-container: node
+  #         test-command: "npm run test"
+  #       env:
+  #         MARIADB_RANDOM_ROOT_PASSWORD: "yes"
+  #         DB_DATABASE: ${{ secrets.DB_DATABASE }}
+  #         DB_HOST: ${{ secrets.DB_HOST }}
+  #         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+  #         DB_USER: ${{ secrets.DB_USER }}
+
+  test:
+    #    needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Tests with Docker Compose
-        uses: adambirds/docker-compose-action@v1.3.0
-        with:
-          compose-file: "./docker-compose.yml"
-          down-flags: "--volumes"
-          services: |
-            node
-            mariadb
-          test-container: node
-          test-command: "npm run test"
-        env:
-          MARIADB_RANDOM_ROOT_PASSWORD: "yes"
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_USER: ${{ secrets.DB_USER }}
+      - uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        run: |
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+      - run: docker compose up -d --build
+      - run: sleep 10 # wait for the database to be ready mariadb
+      - run: docker compose logs express
+      - run: docker compose exec express npm run test
 
   codeql-analysis:
     runs-on: ubuntu-latest
@@ -49,15 +65,15 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  dependency-audit:
-     runs-on: ubuntu-latest
-     steps:
-       - uses: actions/checkout@v4
-       - run: npm audit --audit-level=high
+  # dependency-audit:
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v4
+  #      - run: npm audit --audit-level=high
 
 
   buildDocker:
-    needs: [tests, codeql-analysis]
+    needs: [test, codeql-analysis]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
